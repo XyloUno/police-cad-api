@@ -14,12 +14,12 @@ import (
 	"github.com/linesmerrill/police-cad-api/models"
 )
 
-type Plate struct {
+type PlateSearch struct {
 	DB databases.VehicleDatabase
 }
 
 // Plate Search Handler ...
-func (p Plate) PlateSearchHandler(w http.ResponseWriter, r *http.Request) {
+func (p PlateSearch) PlateSearchHandler(w http.ResponseWriter, r *http.Request) {
 	plateNumber := r.URL.Query().Get("plate")
 	communityID := r.URL.Query().Get("community_id")
 
