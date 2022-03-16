@@ -25,36 +25,19 @@ func (p PlateSearch) PlateSearchHandler(w http.ResponseWriter, r *http.Request) 
 
 	zap.S().Debugf("plate: %v, community_id: %v", plateNumber, communityID)
 
-	var dbResp []models.Vehicle
-	var err error
-	if communityID != "" {
-		dbResp, err = p.DB.Find(context.TODO(), bson.M{
-			"$and": []bson.M{
-				bson.M{
-					"$text": bson.M{
-						"$search": fmt.Sprintf("%v", plateNumber),
-					},
-				},
-				bson.M{
-					"vehicle.activeCommunityID": communityID,
+	dbResp, err := p.DB.Find(context.TODO(), bson.M{
+		"$and": []bson.M{
+			bson.M{
+				"$text": bson.M{
+					"$search": fmt.Sprintf("%v", plateNumber),
 				},
 			},
-		})
-	} else {
-		dbResp, err = p.DB.Find(context.TODO(), bson.M{
-			"$and": []bson.M{
-				bson.M{
-					"$text": bson.M{
-						"$search": fmt.Sprintf("%v", plateNumber),
-					},
-				},
-				bson.M{"$or": []bson.M{
-					bson.M{"civilian.activeCommunityID": ""},
-					bson.M{"civilian.activeCommunityID": nil},
-				}},
-			},
-		})
-	}
+			bson.M{"$or": []bson.M{
+				bson.M{"civilian.activeCommunityID": ""},
+				bson.M{"civilian.activeCommunityID": nil},
+			}},
+		},
+	})
 
 	if err != nil {
 		config.ErrorStatus("failed to get vehicle", http.StatusNotFound, w, err)
